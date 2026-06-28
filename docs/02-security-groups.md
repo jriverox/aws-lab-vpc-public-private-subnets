@@ -109,7 +109,7 @@ aws ec2 authorize-security-group-ingress \
 
    | Type | Protocol | Port | Source | Descripción |
    |---|---|---|---|---|
-   | Custom TCP | TCP | 8000 | `10.0.1.0/24` | FastAPI desde subnet pública |
+   | Custom TCP | TCP | 8000 | `10.0.1.0/24` | FastAPI desde subnet publica |
    | SSH | TCP | 22 | `team01-sg-bastion` | Solo desde el bastion |
 
 3. **Outbound**: dejar por defecto
