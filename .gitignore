@@ -1,0 +1,14 @@
+# Archivos de configuración local (contienen IDs de recursos AWS)
+scripts/cli/config.env
+scripts/cli/resource-ids.env
+
+# Claves SSH (nunca deben subirse al repo)
+*.pem
+*.ppk
+
+# macOS
+.DS_Store
+
+# Variables de entorno locales
+.env
+*.env.local
