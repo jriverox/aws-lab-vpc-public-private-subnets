@@ -79,18 +79,13 @@ ssh-add ~/.ssh/team01-key.pem
 ssh-add -l
 ```
 
-Ahora conéctate al bastion con el flag `-A` (Agent Forwarding):
+Conéctate al bastion con el flag `-A` (Agent Forwarding) para verificar que funciona:
 
 ```bash
 ssh -A -i ~/.ssh/team01-key.pem ec2-user@<BASTION_PUBLIC_IP>
 ```
 
-Una vez dentro del bastion, puedes saltar a la instancia privada sin necesitar el `.pem`:
-
-```bash
-# Desde dentro del bastion:
-ssh ec2-user@<PRIVATE_INSTANCE_IP>
-```
+> ℹ️ El salto desde el bastion hacia las otras instancias lo harás en los pasos 4 y 5, una vez que esas instancias estén creadas. Por ahora solo verificamos que el bastion es accesible y que el Agent Forwarding está activo.
 
 ### Windows (con PuTTY)
 
@@ -103,7 +98,7 @@ Si usas PuTTY, necesitas Pageant para el forwarding:
 
 ### Configuración permanente con `~/.ssh/config` (recomendado)
 
-En lugar de recordar los flags cada vez, agrega esto a tu `~/.ssh/config` en tu máquina local:
+En lugar de recordar los flags cada vez, agrega esto a tu `~/.ssh/config` en tu máquina local. Puedes hacerlo ahora con la IP del bastion y completar las IPs de `team01-ui` y `team01-api` cuando las instancias estén creadas en los pasos 4 y 5:
 
 ```
 Host team01-bastion
@@ -112,19 +107,27 @@ Host team01-bastion
     IdentityFile ~/.ssh/team01-key.pem
     ForwardAgent yes
 
-Host team01-private-*
+Host team01-ui
+    HostName <UI_PUBLIC_IP>
+    User ec2-user
+    IdentityFile ~/.ssh/team01-key.pem
+    ProxyJump team01-bastion
+
+Host team01-api
+    HostName <API_PRIVATE_IP>
     User ec2-user
     IdentityFile ~/.ssh/team01-key.pem
     ProxyJump team01-bastion
 ```
 
-Con esta config puedes conectarte directamente a la instancia privada desde tu máquina local con un solo comando:
+Con esta config puedes conectarte a cualquier instancia desde tu máquina local con un solo comando:
 
 ```bash
-ssh team01-private-api   # sustituye por el nombre o IP que quieras
+ssh team01-ui    # EC2 pública — salta vía bastion automáticamente
+ssh team01-api   # EC2 privada — salta vía bastion automáticamente
 ```
 
-> 💡 `ProxyJump` hace el salto vía bastion de forma transparente, sin que necesites conectarte al bastion primero manualmente.
+> 💡 `ProxyJump` hace el salto vía bastion de forma transparente. Nota que **incluso la instancia pública** requiere pasar por el bastion para SSH, porque su SG solo acepta conexiones SSH originadas desde `team01-sg-bastion`. Esto es intencional: el bastion es el único punto de entrada SSH a toda la VPC.
 
 ---
 

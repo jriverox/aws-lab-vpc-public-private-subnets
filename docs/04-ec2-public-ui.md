@@ -40,13 +40,33 @@ aws ec2 run-instances \
 
 ## Paso 4.2 — Conectarse a la instancia UI
 
-A diferencia del bastion, puedes conectarte directamente a la UI (también está en la subnet pública):
+Aunque `team01-ui-server` tiene IP pública, **no puedes hacer SSH directo desde tu máquina local**. El Security Group `team01-sg-ui` solo permite SSH desde instancias que tengan asignado `team01-sg-bastion` — tu laptop no cumple esa condición.
+
+> 💡 Esto es el comportamiento correcto y esperado. El bastion es el único punto de entrada SSH a toda la VPC, incluso para instancias en la subnet pública. Que no puedas entrar directo confirma que el SG está bien configurado.
+
+**Opción A — ProxyJump en un solo comando (desde tu máquina local):**
 
 ```bash
-ssh -i ~/.ssh/team01-key.pem ec2-user@<UI_PUBLIC_IP>
+ssh -A -i ~/.ssh/team01-key.pem \
+  -o ProxyJump=ec2-user@<BASTION_PUBLIC_IP> \
+  ec2-user@<UI_PUBLIC_IP>
 ```
 
-O si configuraste `~/.ssh/config` en el paso anterior, puedes usar ProxyJump desde el bastion. Cualquier opción funciona para esta instancia.
+**Opción B — Dos saltos manuales:**
+
+```bash
+# 1. Conectarse al bastion
+ssh -A -i ~/.ssh/team01-key.pem ec2-user@<BASTION_PUBLIC_IP>
+
+# 2. Desde dentro del bastion, saltar a la UI
+ssh ec2-user@<UI_PUBLIC_IP>
+```
+
+**Opción C — Con `~/.ssh/config` (si ya lo configuraste en el paso 3):**
+
+```bash
+ssh team01-ui
+```
 
 ---
 
