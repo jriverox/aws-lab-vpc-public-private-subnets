@@ -108,13 +108,13 @@ Host team01-bastion
     ForwardAgent yes
 
 Host team01-ui
-    HostName <UI_PUBLIC_IP>
+    HostName <UI_PRIVATE_IP>   # ejemplo: 10.0.1.104
     User ec2-user
     IdentityFile ~/.ssh/team01-key.pem
     ProxyJump team01-bastion
 
 Host team01-api
-    HostName <API_PRIVATE_IP>
+    HostName <API_PRIVATE_IP>   # ejemplo: 10.0.2.247
     User ec2-user
     IdentityFile ~/.ssh/team01-key.pem
     ProxyJump team01-bastion

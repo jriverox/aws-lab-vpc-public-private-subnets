@@ -44,22 +44,24 @@ Aunque `team01-ui-server` tiene IP pública, **no puedes hacer SSH directo desde
 
 > 💡 Esto es el comportamiento correcto y esperado. El bastion es el único punto de entrada SSH a toda la VPC, incluso para instancias en la subnet pública. Que no puedas entrar directo confirma que el SG está bien configurado.
 
-**Opción A — ProxyJump en un solo comando (desde tu máquina local):**
+**Opción A — Dos saltos manuales (más clara para entender el flujo):**
+
+```bash
+# 1. Desde tu máquina local, conectarte al bastion
+ssh -A -i ~/.ssh/team01-key.pem ec2-user@<BASTION_PUBLIC_IP>
+
+# 2. Desde dentro del bastion, saltar a la UI usando su IP PRIVADA
+ssh ec2-user@<UI_PRIVATE_IP>   # ejemplo: 10.0.1.104
+```
+
+> 💡 Desde el bastion siempre usas la **IP privada** de destino. El tráfico viaja dentro de la VPC sin salir a internet, independientemente de que la instancia UI tenga también una IP pública.
+
+**Opción B — ProxyJump en un solo comando (desde tu máquina local):**
 
 ```bash
 ssh -A -i ~/.ssh/team01-key.pem \
   -o ProxyJump=ec2-user@<BASTION_PUBLIC_IP> \
-  ec2-user@<UI_PUBLIC_IP>
-```
-
-**Opción B — Dos saltos manuales:**
-
-```bash
-# 1. Conectarse al bastion
-ssh -A -i ~/.ssh/team01-key.pem ec2-user@<BASTION_PUBLIC_IP>
-
-# 2. Desde dentro del bastion, saltar a la UI
-ssh ec2-user@<UI_PUBLIC_IP>
+  ec2-user@<UI_PRIVATE_IP>
 ```
 
 **Opción C — Con `~/.ssh/config` (si ya lo configuraste en el paso 3):**
