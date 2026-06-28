@@ -43,7 +43,7 @@ Internet
 │          │ SSH           │                   │
 │          │         [NAT Gateway]             │
 │  ┌───────┼─────────────────────────────┐     │
-│  │  Subnet Privada (10.0.2.0/24)  │   │     │
+│  │  Subnet Privada (10.0.2.0/24)       │     │
 │  │                                     │     │
 │  │  [team01-api]                       │     │
 │  │  FastAPI                            │     │
