@@ -107,20 +107,26 @@ ls /usr/share/nginx/html/
 
 ### Configurar la URL de la API
 
-La UI necesita saber dónde está la API. Edita el archivo de configuración o la variable en el código que apunta al endpoint de la API:
+El repo incluye el archivo `nginx-api-proxy.conf` que configura Nginx como reverse proxy hacia la API. Solo necesitas reemplazar la IP y el puerto:
 
 ```bash
-# Revisar el archivo de configuración de la UI (puede variar según el repo)
-cat /usr/share/nginx/html/config.js
-# o buscar dónde está la URL de la API:
-grep -r "localhost\|8000\|api" /usr/share/nginx/html/ --include="*.js"
+# Editar el archivo con la IP privada real de team01-api-server
+sudo sed -i 's|http://127.0.0.1:8001/|http://<API_PRIVATE_IP>:8000/|g' \
+  /usr/share/nginx/html/nginx-api-proxy.conf
 ```
 
-Reemplaza la URL de la API con la IP privada de `team01-api-server` (la obtendrás en el paso 5):
+Verifica que quedó bien:
 
 ```bash
-# Ejemplo (ajusta el archivo y variable según corresponda):
-sudo sed -i 's|http://localhost:8000|http://<API_PRIVATE_IP>:8000|g' /usr/share/nginx/html/config.js
+cat /usr/share/nginx/html/nginx-api-proxy.conf
+# La línea proxy_pass debe mostrar la IP privada de la API, por ejemplo:
+# proxy_pass http://10.0.2.247:8000/;
+```
+
+Recarga Nginx para aplicar el cambio:
+
+```bash
+sudo systemctl reload nginx
 ```
 
 ---
